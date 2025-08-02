@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 
 const userSchema = new mongoose.Schema({
+  // Unique ID for OTP login
+  uniqueId: {
+    type: String,
+    unique: true,
+    required: true,
+    default: () => `SL${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`
+  },
+  
   // Basic Info
   email: {
     type: String,
@@ -31,6 +40,17 @@ const userSchema = new mongoose.Schema({
   },
   dateOfBirth: {
     type: Date,
+    required: true
+  },
+  
+  // Business/Startup Info
+  businessName: {
+    type: String,
+    trim: true
+  },
+  businessType: {
+    type: String,
+    enum: ['startup', 'business', 'investor'],
     required: true
   },
   
@@ -77,14 +97,30 @@ const userSchema = new mongoose.Schema({
   kycDocuments: [{
     type: {
       type: String,
-      enum: ['passport', 'driving_license', 'national_id', 'utility_bill']
+      enum: ['business_registration', 'pitch_deck', 'proof_of_funds', 'intent_letter', 'passport', 'driving_license', 'national_id', 'utility_bill']
     },
+    name: String,
     url: String,
     uploadedAt: {
       type: Date,
       default: Date.now
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'
     }
   }],
+  
+  // OTP System
+  otp: {
+    code: String,
+    expiresAt: Date,
+    attempts: {
+      type: Number,
+      default: 0
+    }
+  },
   
   // Investor-specific fields
   investorProfile: {
@@ -267,6 +303,7 @@ const userSchema = new mongoose.Schema({
 
 // Indexes for better performance
 userSchema.index({ email: 1 });
+userSchema.index({ uniqueId: 1 });
 userSchema.index({ userType: 1 });
 userSchema.index({ 'location.city': 1, 'location.country': 1 });
 userSchema.index({ kycStatus: 1 });
@@ -296,9 +333,42 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+userSchema.methods.generateOTP = function() {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  this.otp = {
+    code: otp,
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    attempts: 0
+  };
+  return otp;
+};
+
+userSchema.methods.verifyOTP = function(otpCode) {
+  if (!this.otp || !this.otp.code) {
+    return false;
+  }
+  
+  if (this.otp.attempts >= 3) {
+    return false;
+  }
+  
+  if (new Date() > this.otp.expiresAt) {
+    return false;
+  }
+  
+  if (this.otp.code === otpCode) {
+    this.otp = null; // Clear OTP after successful verification
+    return true;
+  }
+  
+  this.otp.attempts += 1;
+  return false;
+};
+
 userSchema.methods.getPublicProfile = function() {
   const user = this.toObject();
   delete user.password;
+  delete user.otp;
   delete user.kycDocuments;
   delete user.loginHistory;
   if (!user.preferences.privacy.investmentHistoryVisible) {
@@ -316,6 +386,10 @@ userSchema.methods.updateCommunityScore = function() {
 // Static methods
 userSchema.statics.findByEmail = function(email) {
   return this.findOne({ email: email.toLowerCase() });
+};
+
+userSchema.statics.findByUniqueId = function(uniqueId) {
+  return this.findOne({ uniqueId: uniqueId.toUpperCase() });
 };
 
 userSchema.statics.getTopInvestors = function(limit = 10) {

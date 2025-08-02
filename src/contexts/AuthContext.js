@@ -187,6 +187,54 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // OTP-based login methods
+  const loginWithOTP = async (email, uniqueId) => {
+    try {
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
+      dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
+      
+      const response = await authAPI.loginWithOTP(email, uniqueId);
+      
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to send OTP';
+      dispatch({
+        type: AUTH_ACTIONS.SET_ERROR,
+        payload: errorMessage,
+      });
+      return { success: false, error: errorMessage };
+    } finally {
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+    }
+  };
+
+  const verifyOTP = async (email, uniqueId, otp) => {
+    try {
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
+      dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
+      
+      const response = await authAPI.verifyOTP(email, uniqueId, otp);
+      
+      const { user, token } = response.data;
+      
+      await storeAuth(token, user);
+      
+      dispatch({
+        type: AUTH_ACTIONS.LOGIN_SUCCESS,
+        payload: { user, token },
+      });
+      
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'OTP verification failed';
+      dispatch({
+        type: AUTH_ACTIONS.SET_ERROR,
+        payload: errorMessage,
+      });
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const logout = async () => {
     try {
       if (state.token) {
@@ -231,6 +279,27 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Document upload methods
+  const uploadDocuments = async (documents) => {
+    try {
+      const response = await authAPI.uploadDocuments(documents, state.token);
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Document upload failed';
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const getRequiredDocuments = async (userType) => {
+    try {
+      const response = await authAPI.getRequiredDocuments(userType);
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to get required documents';
+      return { success: false, error: errorMessage };
+    }
+  };
+
   const clearError = () => {
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
@@ -239,9 +308,13 @@ export function AuthProvider({ children }) {
     ...state,
     register,
     login,
+    loginWithOTP,
+    verifyOTP,
     logout,
     updateProfile,
     changePassword,
+    uploadDocuments,
+    getRequiredDocuments,
     clearError,
   };
 
