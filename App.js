@@ -15,6 +15,7 @@ import InvestorDashboard from './src/screens/InvestorDashboard';
 import ProfileScreen from './src/screens/ProfileScreen';
 import StartupDetailScreen from './src/screens/StartupDetailScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
+import AIRecommendationsScreen from './src/screens/AIRecommendationsScreen';
 
 // Import contexts
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -38,6 +39,11 @@ function MainApp() {
         name="StartupDetail" 
         component={StartupDetailScreen}
         options={{ title: 'Startup Details' }}
+      />
+      <Stack.Screen 
+        name="AIRecommendations" 
+        component={AIRecommendationsScreen}
+        options={{ title: 'AI Recommendations' }}
       />
     </Stack.Navigator>
   );

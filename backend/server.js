@@ -17,6 +17,7 @@ const investmentRoutes = require('./routes/investments');
 const paymentRoutes = require('./routes/payments');
 const communityRoutes = require('./routes/community');
 const analyticsRoutes = require('./routes/analytics');
+const recommendationRoutes = require('./routes/recommendations');
 
 const app = express();
 const server = http.createServer(app);
@@ -80,6 +81,7 @@ app.use('/api/investments', investmentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

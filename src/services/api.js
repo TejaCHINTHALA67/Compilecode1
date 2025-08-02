@@ -120,6 +120,23 @@ export const analyticsAPI = {
   getPortfolioPerformance: (token) => api.get('/analytics/portfolio/performance', withAuth(token)),
 };
 
+// Recommendations API
+export const recommendationsAPI = {
+  getStartupRecommendations: (params, token) => {
+    const query = new URLSearchParams(params).toString();
+    return api.get(`/recommendations/startups?${query}`, withAuth(token));
+  },
+  getInvestorRecommendations: (startupId, params, token) => {
+    const query = new URLSearchParams(params).toString();
+    return api.get(`/recommendations/investors/${startupId}?${query}`, withAuth(token));
+  },
+  getTrendingSectors: (token) => api.get('/recommendations/trending-sectors', withAuth(token)),
+  updatePreferences: (preferences, token) => api.put('/recommendations/preferences', preferences, withAuth(token)),
+  getStartupInsights: (startupId, token) => api.get(`/recommendations/insights/startup/${startupId}`, withAuth(token)),
+  suggestInvestment: (data, token) => api.post('/recommendations/suggest-investment', data, withAuth(token)),
+  updateAIScores: (token) => api.post('/recommendations/update-scores', {}, withAuth(token)),
+};
+
 // File upload helper
 export const uploadHelper = {
   createFormData: (files) => {

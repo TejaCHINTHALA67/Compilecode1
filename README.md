@@ -22,7 +22,9 @@ StartupLink is a mobile-first platform where entrepreneurs can pitch their start
 - **Instagram-like Feed**: Vertical scroll through startup pitches
 - **Multi-Payment Support**: UPI (India), Stripe (Global), Plaid (US)
 - **Real-time Updates**: Socket.io for live notifications
-- **AI Scoring**: Startup evaluation and investor recommendations
+- **🤖 AI-Powered Matching**: Intelligent startup-investor recommendations
+- **Smart Investment Suggestions**: AI analyzes risk, capacity, and preferences
+- **Personalized Discovery**: Machine learning algorithms for perfect matches
 - **Social Features**: Like, comment, bookmark, and share startups
 - **Community Groups**: Sector-based discussions and networking
 
@@ -208,6 +210,15 @@ backend/
 - `POST /api/payments/stripe/create-intent` - Create Stripe payment intent
 - `POST /api/payments/verify` - Verify payment
 
+### AI Recommendations
+- `GET /api/recommendations/startups` - Get AI-powered startup recommendations for investors
+- `GET /api/recommendations/investors/:startupId` - Get investor recommendations for startups
+- `GET /api/recommendations/trending-sectors` - Get trending sectors with AI insights
+- `PUT /api/recommendations/preferences` - Update investor preferences for better recommendations
+- `GET /api/recommendations/insights/startup/:id` - Get detailed AI insights for a startup
+- `POST /api/recommendations/suggest-investment` - Generate AI-powered investment suggestions
+- `POST /api/recommendations/update-scores` - Batch update AI scores (admin/cron)
+
 ## 🚀 Deployment
 
 ### Backend Deployment
@@ -238,16 +249,50 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support, email support@startuplink.com or join our community Discord.
 
+## 🤖 AI Features
+
+### Intelligent Startup-Investor Matching
+- **Multi-factor Scoring**: Evaluates startups based on team, market, traction, financials, and product
+- **Personalized Recommendations**: AI analyzes investor preferences, risk tolerance, and investment history
+- **Smart Investment Suggestions**: Recommends optimal investment amounts based on portfolio and risk profile
+- **Real-time Insights**: Generates reasons why specific startups match investor criteria
+- **Trending Analysis**: Identifies hot sectors and emerging opportunities
+
+### AI Scoring Algorithm
+The AI system evaluates startups using weighted criteria:
+- **Sector Preference (25%)**: Matches investor's preferred industries
+- **Stage Compatibility (20%)**: Aligns with investor's risk tolerance
+- **Funding Range (20%)**: Fits within investor's capacity
+- **Past Performance (15%)**: Analyzes founder experience and metrics
+- **Location Preference (15%)**: Geographic and timezone compatibility
+- **Social Proof (5%)**: Community engagement and validation
+
+### For Investors
+- Get personalized startup recommendations with AI match scores
+- Receive investment amount suggestions based on risk profile
+- Access detailed AI insights explaining why startups match your criteria
+- View trending sectors with funding data and growth metrics
+- Update preferences to improve AI recommendations
+
+### For Entrepreneurs
+- Discover investors who are likely to be interested in your sector
+- Get matched with investors based on funding stage and location
+- Receive AI insights on your startup's strengths and areas for improvement
+- Access recommendations on how to improve your pitch appeal
+
 ## 🗺 Roadmap
 
-- [ ] Advanced AI investment recommendations
+- [x] ✅ AI-powered startup-investor matching system
+- [x] ✅ Intelligent investment amount suggestions
+- [x] ✅ Personalized recommendation algorithms
 - [ ] Video pitch recording and streaming
 - [ ] Multi-language support
 - [ ] Web application version
-- [ ] Advanced analytics dashboard
+- [ ] Advanced predictive analytics
 - [ ] Integration with external data sources
 - [ ] Automated KYC verification
 - [ ] Social trading features
+- [ ] AI chatbot for investment guidance
 
 ## 🏆 MVP Status
 
