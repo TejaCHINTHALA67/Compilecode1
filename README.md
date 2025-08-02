@@ -1,226 +1,251 @@
-# StartupLink - Mobile Startup Investment Platform
+# StartupLink - Enhanced Authentication System
 
-StartupLink is a mobile-first platform where entrepreneurs can pitch their startup ideas and everyday people can make micro-investments to support promising ventures. Think Instagram for startup pitches with direct investment capabilities.
+A comprehensive full-stack authentication system for the StartupLink platform that connects investors with startups and businesses. This system includes advanced security features, document management, and user role-based authentication.
 
-## 🚀 Features
+## 🚀 New Features
 
-### For Entrepreneurs
-- Create comprehensive startup profiles with pitch videos and documents
-- Track funding progress and investor engagement
-- Post updates and milestones to keep investors informed
-- Analytics dashboard for profile views and funding metrics
-- Community support based on startup domain
+### 🔐 Enhanced Authentication System
 
-### For Investors
-- Browse startup pitches by sector, location, and stage
-- Make micro-investments starting from $100
-- Portfolio tracking and performance analytics
-- Sector-based investment recommendations
-- Community features for networking and learning
+#### **Unique ID + OTP Login System**
+- **Secure Login**: Users can login using their unique ID and email, receiving a 6-digit OTP via email
+- **Unique ID Generation**: Each user gets a unique identifier (format: `SL{timestamp}{random}`) upon registration
+- **OTP Verification**: 10-minute expiration with 3 attempt limit for security
+- **Fallback Login**: Traditional email/password login still available
 
-### Core Features
-- **Instagram-like Feed**: Vertical scroll through startup pitches
-- **Multi-Payment Support**: UPI (India), Stripe (Global), Plaid (US)
-- **Real-time Updates**: Socket.io for live notifications
-- **AI Scoring**: Startup evaluation and investor recommendations
-- **Social Features**: Like, comment, bookmark, and share startups
-- **Community Groups**: Sector-based discussions and networking
+#### **Role-Based Registration**
+- **Startup/Business**: For entrepreneurs seeking investment
+- **Investor**: For individuals wanting to invest in startups
+- **Both**: For users who both create startups and invest
 
-## 🛠 Tech Stack
+#### **KYC Document Management**
+- **Document Upload**: Secure file upload for required KYC documents
+- **Role-Specific Requirements**:
+  - **Startups**: Business Registration, Pitch Deck, Passport/ID
+  - **Investors**: Proof of Funds, Intent Letter, Passport/ID
+  - **Both**: All documents with flexible requirements
+- **Document Status Tracking**: Pending, Approved, Rejected status for each document
+- **Email Confirmations**: Automatic email notifications for document uploads
 
-### Frontend (Mobile)
-- React Native 0.72+
-- React Navigation 6
-- React Native Paper (Material Design)
-- React Native Vector Icons
-- React Native Linear Gradient
-- Axios for API calls
-- AsyncStorage for local data
+#### **Enhanced User Experience**
+- **Email Notifications**: Welcome emails with account details and unique ID
+- **Form Validation**: Comprehensive client and server-side validation
+- **Responsive Design**: Mobile-first design with modern UI components
+- **Error Handling**: User-friendly error messages and validation feedback
 
-### Backend (API)
-- Node.js + Express.js
-- MongoDB with Mongoose
-- JWT Authentication
-- Socket.io for real-time features
-- Cloudinary for file uploads
-- Redis for caching (optional)
+## 🏗️ Architecture
 
-### Payment Integration
-- **Razorpay**: UPI and Indian payment methods
-- **Stripe**: Global credit/debit cards
-- **Plaid**: US bank account linking
+### Backend (Node.js + Express + MongoDB)
 
-### Infrastructure
-- MongoDB Atlas (Database)
-- Cloudinary (File Storage)
-- Firebase (Push Notifications)
-- Socket.io (Real-time Updates)
+#### **Enhanced User Model** (`backend/models/User.js`)
+```javascript
+// New fields added:
+- uniqueId: String (auto-generated unique identifier)
+- businessType: String (startup/business/investor)
+- businessName: String
+- otp: Object (code, expiresAt, attempts)
+- kycDocuments: Array (type, name, url, status)
+```
 
-## 📦 Installation
+#### **Authentication Routes** (`backend/routes/auth.js`)
+- `POST /auth/register` - Enhanced registration with unique ID generation
+- `POST /auth/login` - Traditional password-based login
+- `POST /auth/login-otp` - Initiate OTP-based login
+- `POST /auth/verify-otp` - Verify OTP and complete login
+- `POST /auth/upload-documents` - Upload KYC documents
+- `GET /auth/required-documents/:userType` - Get required documents by user type
+
+#### **Services**
+- **Email Service** (`backend/services/emailService.js`): Handles OTP and confirmation emails
+- **Document Service** (`backend/services/documentService.js`): Manages file uploads and validation
+
+### Frontend (React Native)
+
+#### **Enhanced Auth Screen** (`src/screens/EnhancedAuthScreen.js`)
+- Multi-mode authentication (login, register, OTP login, OTP verify)
+- Document upload interface
+- Role-based form fields
+- Real-time validation
+
+#### **Enhanced Auth Context** (`src/contexts/AuthContext.js`)
+- OTP-based authentication methods
+- Document upload functionality
+- Enhanced error handling
+
+#### **API Service** (`src/services/api.js`)
+- New endpoints for OTP authentication
+- Document upload API integration
+- Enhanced error handling
+
+## 🔧 Installation & Setup
 
 ### Prerequisites
-- Node.js 16+ and npm
-- MongoDB (local or Atlas)
+- Node.js (v14+)
+- MongoDB
 - React Native development environment
-- Android Studio / Xcode for mobile development
-
-### Backend Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd startuplink
-   ```
-
-2. **Install backend dependencies**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration values
-   ```
-
-4. **Start MongoDB**
-   ```bash
-   # If using local MongoDB
-   mongod
-   
-   # Or configure MongoDB Atlas connection in .env
-   ```
-
-5. **Start the backend server**
-   ```bash
-   npm run dev
-   # Server will start on http://localhost:3000
-   ```
-
-### Frontend Setup
-
-1. **Install frontend dependencies**
-   ```bash
-   # From project root
-   npm install
-   ```
-
-2. **iOS Setup** (macOS only)
-   ```bash
-   cd ios
-   pod install
-   cd ..
-   ```
-
-3. **Start Metro bundler**
-   ```bash
-   npm start
-   ```
-
-4. **Run on device/simulator**
-   ```bash
-   # Android
-   npm run android
-   
-   # iOS
-   npm run ios
-   ```
-
-## 🔧 Configuration
+- SMTP server for email functionality
 
 ### Environment Variables
+Create a `.env` file in the backend directory:
 
-Copy `backend/.env.example` to `backend/.env` and configure:
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/startuplink
 
-- **Database**: MongoDB connection string
-- **JWT**: Secret key for authentication
-- **Cloudinary**: File upload service credentials
-- **Payment Gateways**: Razorpay, Stripe, Plaid API keys
-- **Firebase**: Push notification credentials
+# JWT
+JWT_SECRET=your_jwt_secret_here
 
-### Payment Gateway Setup
+# Email (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
 
-1. **Razorpay** (India/UPI)
-   - Sign up at razorpay.com
-   - Get API keys from dashboard
-   - Configure webhook endpoints
+# Frontend URL
+FRONTEND_URL=https://startuplink.app
 
-2. **Stripe** (Global)
-   - Create account at stripe.com
-   - Get API keys
-   - Set up webhook endpoints
-
-3. **Plaid** (US Banking)
-   - Register at plaid.com
-   - Get client ID and secret
-   - Configure for sandbox/production
-
-## 📱 App Structure
-
-```
-src/
-├── components/          # Reusable UI components
-├── screens/            # Main app screens
-├── contexts/           # React contexts (Auth, etc.)
-├── services/           # API services and utilities
-├── styles/             # Themes and styling
-└── utils/              # Helper functions
-
-backend/
-├── models/             # Database models
-├── routes/             # API route handlers
-├── middleware/         # Custom middleware
-└── services/           # Business logic services
+# Environment
+NODE_ENV=development
 ```
 
-## 🔐 Security Features
+### Installation Steps
 
-- JWT-based authentication
-- Password hashing with bcrypt
-- Rate limiting on API endpoints
-- Input validation and sanitization
-- CORS configuration
-- Helmet.js security headers
-- KYC verification for investors
+1. **Clone the repository**
+```bash
+git clone https://github.com/TejaCHINTHALA67/Compilecode1.git
+cd Compilecode1
+```
 
-## 📊 API Endpoints
+2. **Install backend dependencies**
+```bash
+cd backend
+npm install
+```
 
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `PUT /api/auth/profile` - Update profile
+3. **Install frontend dependencies**
+```bash
+cd ..
+npm install
+```
 
-### Startups
-- `GET /api/startups` - List startups with filters
-- `POST /api/startups` - Create startup
-- `GET /api/startups/:id` - Get startup details
-- `POST /api/startups/:id/like` - Like/unlike startup
-- `POST /api/startups/:id/bookmark` - Bookmark startup
+4. **Start the backend server**
+```bash
+cd backend
+npm run dev
+```
 
-### Investments
-- `POST /api/investments` - Create investment
-- `GET /api/investments/portfolio` - Get user portfolio
+5. **Start the React Native app**
+```bash
+# In a new terminal
+npm start
+```
 
-### Payments
-- `POST /api/payments/razorpay/create-order` - Create Razorpay order
-- `POST /api/payments/stripe/create-intent` - Create Stripe payment intent
-- `POST /api/payments/verify` - Verify payment
+## 📱 Usage
 
-## 🚀 Deployment
+### Registration Flow
+1. User selects role (Startup/Business/Investor)
+2. Fills in personal and business information
+3. System generates unique ID and sends welcome email
+4. User can immediately login with unique ID + OTP
 
-### Backend Deployment
-1. Deploy to platforms like Railway, Render, or AWS
-2. Configure environment variables
-3. Set up MongoDB Atlas
-4. Configure Cloudinary for file uploads
+### Login Flow
+1. **Traditional**: Email + Password
+2. **OTP-based**: Email + Unique ID → Receive OTP → Verify OTP
 
-### Mobile App Deployment
-1. Build release APK/IPA
-2. Test on physical devices
-3. Submit to Google Play Store / App Store
-4. Configure deep linking and notifications
+### Document Upload
+1. User navigates to document upload section
+2. Selects document type from required list
+3. Uploads file (PDF, JPG, PNG up to 10MB)
+4. Receives confirmation email
+5. Documents reviewed by admin team
+
+## 🔒 Security Features
+
+- **Unique ID System**: Prevents email enumeration attacks
+- **OTP Expiration**: 10-minute time limit for security
+- **Attempt Limiting**: 3 failed OTP attempts before lockout
+- **Document Validation**: File type and size restrictions
+- **JWT Tokens**: Secure session management
+- **Password Hashing**: bcrypt with salt rounds
+- **Input Validation**: Comprehensive server-side validation
+
+## 📧 Email Templates
+
+The system includes professionally designed email templates for:
+- **Welcome Email**: Account creation confirmation with unique ID
+- **OTP Email**: Secure login code delivery
+- **Document Upload Confirmation**: Upload receipt and status
+
+## 🧪 Testing
+
+### Backend Testing
+```bash
+cd backend
+npm test
+```
+
+### Frontend Testing
+```bash
+npm test
+```
+
+## 📊 API Documentation
+
+### Authentication Endpoints
+
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "+1234567890",
+  "dateOfBirth": "1990-01-15",
+  "userType": "entrepreneur",
+  "businessType": "startup",
+  "businessName": "My Startup",
+  "location": {
+    "city": "San Francisco",
+    "country": "USA"
+  }
+}
+```
+
+#### OTP Login
+```http
+POST /api/auth/login-otp
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "uniqueId": "SL1234567890ABC"
+}
+```
+
+#### Verify OTP
+```http
+POST /api/auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "uniqueId": "SL1234567890ABC",
+  "otp": "123456"
+}
+```
+
+#### Upload Documents
+```http
+POST /api/auth/upload-documents
+Content-Type: multipart/form-data
+Authorization: Bearer <token>
+
+Form Data:
+- documents: [file1, file2, ...]
+```
 
 ## 🤝 Contributing
 
@@ -236,28 +261,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-For support, email support@startuplink.com or join our community Discord.
+For support and questions:
+- Create an issue in the GitHub repository
+- Contact: support@startuplink.app
 
-## 🗺 Roadmap
+## 🔄 Version History
 
-- [ ] Advanced AI investment recommendations
-- [ ] Video pitch recording and streaming
-- [ ] Multi-language support
-- [ ] Web application version
-- [ ] Advanced analytics dashboard
-- [ ] Integration with external data sources
-- [ ] Automated KYC verification
-- [ ] Social trading features
-
-## 🏆 MVP Status
-
-This is an MVP (Minimum Viable Product) implementation including:
-- ✅ User authentication and profiles
-- ✅ Startup pitch creation and browsing
-- ✅ Instagram-like feed interface
-- ✅ Basic investment functionality
-- ✅ Payment gateway integration
-- ✅ Real-time updates
+### v2.0.0 - Enhanced Authentication System
+- ✅ Unique ID + OTP login system
+- ✅ Role-based registration
+- ✅ KYC document management
+- ✅ Email service integration
+- ✅ Enhanced security features
 - ✅ Mobile-responsive design
 
-**Next Phase**: Advanced features, AI recommendations, and community features.
+### v1.0.0 - Initial Release
+- ✅ Basic authentication
+- ✅ User profiles
+- ✅ Startup management
+- ✅ Investment tracking
+
+---
+
+**StartupLink** - Connecting investors with the next generation of startups! 🚀
