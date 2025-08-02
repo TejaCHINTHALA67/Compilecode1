@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { startupsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { theme, commonStyles } from '../styles/theme';
+import AIInsights from '../components/AIInsights';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -329,18 +330,27 @@ export default function HomeScreen({ navigation }) {
                 </View>
               </View>
 
-              {/* Invest Button */}
+              {/* Investment Actions for Investors */}
               {user?.userType === 'investor' || user?.userType === 'both' ? (
-                <Button
-                  mode="contained"
-                  style={styles.investButton}
-                  onPress={() => navigation.navigate('StartupDetail', { 
-                    startupId: startup._id, 
-                    showInvestModal: true 
-                  })}
-                >
-                  Invest Now
-                </Button>
+                <View style={styles.investorActions}>
+                  <Button
+                    mode="contained"
+                    style={styles.investButton}
+                    onPress={() => navigation.navigate('StartupDetail', { 
+                      startupId: startup._id, 
+                      showInvestModal: true 
+                    })}
+                  >
+                    Invest Now
+                  </Button>
+                  <AIInsights
+                    targetId={startup._id}
+                    targetType="startup"
+                    analysisType="investor_analysis"
+                    buttonText="🤖 AI Insights"
+                    buttonStyle={styles.aiInsightsButton}
+                  />
+                </View>
               ) : (
                 <Button
                   mode="outlined"
@@ -527,8 +537,15 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.textSecondary,
   },
-  investButton: {
+  investorActions: {
     marginTop: theme.spacing.sm,
+  },
+  investButton: {
+    marginBottom: theme.spacing.xs,
+  },
+  aiInsightsButton: {
+    borderColor: theme.colors.primary,
+    borderWidth: 1,
   },
   viewButton: {
     marginTop: theme.spacing.sm,
