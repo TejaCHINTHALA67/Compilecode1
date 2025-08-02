@@ -49,12 +49,24 @@ const withAuth = (token) => ({
 export const authAPI = {
   register: (userData) => api.post('/auth/register', userData),
   login: (email, password) => api.post('/auth/login', { email, password }),
+  loginWithOTP: (email, uniqueId) => api.post('/auth/login-otp', { email, uniqueId }),
+  verifyOTP: (email, uniqueId, otp) => api.post('/auth/verify-otp', { email, uniqueId, otp }),
   logout: (token) => api.post('/auth/logout', {}, withAuth(token)),
   getProfile: (token) => api.get('/auth/me', withAuth(token)),
   updateProfile: (data, token) => api.put('/auth/profile', data, withAuth(token)),
   changePassword: (currentPassword, newPassword, token) => 
     api.put('/auth/change-password', { currentPassword, newPassword }, withAuth(token)),
   verifyEmail: (code, token) => api.post('/auth/verify-email', { verificationCode: code }, withAuth(token)),
+  uploadDocuments: (formData, token) => {
+    return api.post('/auth/upload-documents', formData, {
+      ...withAuth(token),
+      headers: {
+        ...withAuth(token).headers,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  getRequiredDocuments: (userType) => api.get(`/auth/required-documents/${userType}`),
 };
 
 // Startups API
@@ -135,6 +147,20 @@ export const uploadHelper = {
       } else if (files[key]) {
         formData.append(key, files[key]);
       }
+    });
+    
+    return formData;
+  },
+  
+  createDocumentFormData: (documents) => {
+    const formData = new FormData();
+    
+    documents.forEach((doc, index) => {
+      formData.append('documents', {
+        uri: doc.uri,
+        type: doc.type || 'application/pdf',
+        name: doc.name,
+      });
     });
     
     return formData;

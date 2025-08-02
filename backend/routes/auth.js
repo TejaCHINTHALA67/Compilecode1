@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const emailService = require('../services/emailService');
+const documentService = require('../services/documentService');
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ const generateToken = (userId) => {
   });
 };
 
-// Register endpoint
+// Register endpoint with enhanced features
 router.post('/register', [
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
@@ -22,7 +24,9 @@ router.post('/register', [
   body('lastName').trim().isLength({ min: 2 }).withMessage('Last name is required'),
   body('phoneNumber').isMobilePhone().withMessage('Please provide a valid phone number'),
   body('dateOfBirth').isISO8601().withMessage('Please provide a valid date of birth'),
-  body('userType').isIn(['entrepreneur', 'investor', 'both']).withMessage('User type must be entrepreneur, investor, or both')
+  body('userType').isIn(['entrepreneur', 'investor', 'both']).withMessage('User type must be entrepreneur, investor, or both'),
+  body('businessType').isIn(['startup', 'business', 'investor']).withMessage('Business type is required'),
+  body('businessName').optional().trim().isLength({ min: 2 }).withMessage('Business name must be at least 2 characters')
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -43,6 +47,8 @@ router.post('/register', [
       phoneNumber,
       dateOfBirth,
       userType,
+      businessType,
+      businessName,
       location
     } = req.body;
 
@@ -65,7 +71,7 @@ router.post('/register', [
       });
     }
 
-    // Create new user
+    // Create new user with unique ID
     const user = new User({
       email,
       password,
@@ -74,6 +80,8 @@ router.post('/register', [
       phoneNumber,
       dateOfBirth: birthDate,
       userType,
+      businessType,
+      businessName,
       location: location || {}
     });
 
@@ -102,6 +110,21 @@ router.post('/register', [
 
     await user.save();
 
+    // Send welcome email with account details
+    try {
+      await emailService.sendAccountConfirmation(email, {
+        firstName,
+        lastName,
+        email,
+        uniqueId: user.uniqueId,
+        userType,
+        businessName
+      });
+    } catch (emailError) {
+      console.error('Error sending welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
+
     // Generate token
     const token = generateToken(user._id);
 
@@ -110,10 +133,11 @@ router.post('/register', [
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
+      message: 'Account created successfully! Check your email for account details.',
       data: {
         user: userData,
-        token
+        token,
+        requiredDocuments: documentService.getRequiredDocuments(userType)
       }
     });
 
@@ -127,7 +151,164 @@ router.post('/register', [
   }
 });
 
-// Login endpoint
+// OTP-based login endpoint
+router.post('/login-otp', [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+  body('uniqueId').notEmpty().withMessage('Unique ID is required')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: errors.array()
+      });
+    }
+
+    const { email, uniqueId } = req.body;
+
+    // Find user by email and unique ID
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      uniqueId: uniqueId.toUpperCase()
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or Unique ID'
+      });
+    }
+
+    // Check if account is active
+    if (user.status !== 'active') {
+      return res.status(401).json({
+        success: false,
+        message: 'Account is suspended or deactivated'
+      });
+    }
+
+    // Generate and send OTP
+    const otp = user.generateOTP();
+    await user.save();
+
+    // Send OTP email
+    try {
+      await emailService.sendOTP(email, otp, user.firstName);
+    } catch (emailError) {
+      console.error('Error sending OTP email:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP. Please try again.'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'OTP sent to your email',
+      data: {
+        email: user.email,
+        uniqueId: user.uniqueId
+      }
+    });
+
+  } catch (error) {
+    console.error('OTP login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// Verify OTP endpoint
+router.post('/verify-otp', [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+  body('uniqueId').notEmpty().withMessage('Unique ID is required'),
+  body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: errors.array()
+      });
+    }
+
+    const { email, uniqueId, otp } = req.body;
+
+    // Find user
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      uniqueId: uniqueId.toUpperCase()
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or Unique ID'
+      });
+    }
+
+    // Verify OTP
+    const isValidOTP = user.verifyOTP(otp);
+    if (!isValidOTP) {
+      await user.save(); // Save attempt count
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired OTP'
+      });
+    }
+
+    await user.save();
+
+    // Update last login
+    user.lastLogin = new Date();
+    user.loginHistory.unshift({
+      timestamp: new Date(),
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    // Keep only last 10 login records
+    if (user.loginHistory.length > 10) {
+      user.loginHistory = user.loginHistory.slice(0, 10);
+    }
+
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Return user data without sensitive information
+    const userData = user.getPublicProfile();
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: userData,
+        token
+      }
+    });
+
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'OTP verification failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// Traditional password-based login endpoint
 router.post('/login', [
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').notEmpty().withMessage('Password is required')
@@ -211,6 +392,100 @@ router.post('/login', [
   }
 });
 
+// Document upload endpoint
+router.post('/upload-documents', auth, documentService.getUploadMiddleware().array('documents', 5), async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No documents uploaded'
+      });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Process uploaded documents
+    const uploadedDocs = await documentService.processUploadedDocuments(
+      req.files,
+      user._id,
+      user.userType
+    );
+
+    // Add documents to user
+    user.kycDocuments.push(...uploadedDocs);
+    await user.save();
+
+    // Send confirmation emails for each document
+    for (const doc of uploadedDocs) {
+      try {
+        await emailService.sendDocumentUploadConfirmation(
+          user.email,
+          user.firstName,
+          doc.name
+        );
+      } catch (emailError) {
+        console.error('Error sending document confirmation email:', emailError);
+      }
+    }
+
+    // Get document status summary
+    const docSummary = documentService.getDocumentStatusSummary(
+      user.kycDocuments,
+      user.userType
+    );
+
+    res.json({
+      success: true,
+      message: 'Documents uploaded successfully',
+      data: {
+        documents: uploadedDocs,
+        summary: docSummary,
+        isComplete: documentService.isDocumentationComplete(
+          user.kycDocuments,
+          user.userType
+        )
+      }
+    });
+
+  } catch (error) {
+    console.error('Document upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Document upload failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// Get required documents for user type
+router.get('/required-documents/:userType', (req, res) => {
+  try {
+    const { userType } = req.params;
+    const requiredDocs = documentService.getRequiredDocuments(userType);
+    
+    res.json({
+      success: true,
+      data: {
+        documents: requiredDocs,
+        uploadFields: documentService.generateUploadFields(userType)
+      }
+    });
+  } catch (error) {
+    console.error('Get required documents error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get required documents',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
 // Get current user profile
 router.get('/me', auth, async (req, res) => {
   try {
@@ -222,9 +497,18 @@ router.get('/me', auth, async (req, res) => {
       });
     }
 
+    // Get document status summary
+    const docSummary = documentService.getDocumentStatusSummary(
+      user.kycDocuments,
+      user.userType
+    );
+
+    const userData = user.getPublicProfile();
+    userData.documentSummary = docSummary;
+
     res.json({
       success: true,
-      data: user.getPublicProfile()
+      data: userData
     });
 
   } catch (error) {
