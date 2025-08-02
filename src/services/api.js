@@ -118,6 +118,8 @@ export const communityAPI = {
 export const analyticsAPI = {
   getInvestmentsBySector: (token) => api.get('/analytics/investments/by-sector', withAuth(token)),
   getPortfolioPerformance: (token) => api.get('/analytics/portfolio/performance', withAuth(token)),
+  getAIInsights: (targetId, targetType, analysisType, token) => 
+    api.post('/analytics/ai-insights', { targetId, targetType, analysisType }, withAuth(token)),
 };
 
 // File upload helper
