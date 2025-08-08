@@ -44,7 +44,7 @@ export default function AuthScreen() {
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
@@ -52,7 +52,7 @@ export default function AuthScreen() {
         },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [field]: value,
       }));
@@ -84,7 +84,9 @@ export default function AuthScreen() {
       // Basic age validation (18+)
       if (formData.dateOfBirth) {
         const birthDate = new Date(formData.dateOfBirth);
-        const age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        const age = Math.floor(
+          (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+        );
         if (age < 18) {
           showMessage('You must be at least 18 years old to register');
           return false;
@@ -101,7 +103,9 @@ export default function AuthScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     clearError();
 
@@ -118,7 +122,16 @@ export default function AuthScreen() {
     }
   };
 
-  const sectors = ['AI', 'Health', 'Climate', 'EdTech', 'FinTech', 'E-commerce', 'Gaming', 'Other'];
+  const sectors = [
+    'AI',
+    'Health',
+    'Climate',
+    'EdTech',
+    'FinTech',
+    'E-commerce',
+    'Gaming',
+    'Other',
+  ];
 
   return (
     <LinearGradient
@@ -137,10 +150,9 @@ export default function AuthScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>StartupLink</Text>
             <Text style={styles.subtitle}>
-              {isLogin 
-                ? 'Welcome back! Sign in to continue' 
-                : 'Join the startup investment revolution'
-              }
+              {isLogin
+                ? 'Welcome back! Sign in to continue'
+                : 'Join the startup investment revolution'}
             </Text>
           </View>
 
@@ -174,14 +186,18 @@ export default function AuthScreen() {
                     <TextInput
                       label="First Name"
                       value={formData.firstName}
-                      onChangeText={(text) => handleInputChange('firstName', text)}
+                      onChangeText={(text) =>
+                        handleInputChange('firstName', text)
+                      }
                       style={[styles.input, styles.halfWidth]}
                       mode="outlined"
                     />
                     <TextInput
                       label="Last Name"
                       value={formData.lastName}
-                      onChangeText={(text) => handleInputChange('lastName', text)}
+                      onChangeText={(text) =>
+                        handleInputChange('lastName', text)
+                      }
                       style={[styles.input, styles.halfWidth]}
                       mode="outlined"
                     />
@@ -190,7 +206,9 @@ export default function AuthScreen() {
                   <TextInput
                     label="Phone Number"
                     value={formData.phoneNumber}
-                    onChangeText={(text) => handleInputChange('phoneNumber', text)}
+                    onChangeText={(text) =>
+                      handleInputChange('phoneNumber', text)
+                    }
                     style={styles.input}
                     mode="outlined"
                     keyboardType="phone-pad"
@@ -199,7 +217,9 @@ export default function AuthScreen() {
                   <TextInput
                     label="Date of Birth (YYYY-MM-DD)"
                     value={formData.dateOfBirth}
-                    onChangeText={(text) => handleInputChange('dateOfBirth', text)}
+                    onChangeText={(text) =>
+                      handleInputChange('dateOfBirth', text)
+                    }
                     style={styles.input}
                     mode="outlined"
                     placeholder="1990-01-15"
@@ -209,14 +229,18 @@ export default function AuthScreen() {
                     <TextInput
                       label="City"
                       value={formData.location.city}
-                      onChangeText={(text) => handleInputChange('location.city', text)}
+                      onChangeText={(text) =>
+                        handleInputChange('location.city', text)
+                      }
                       style={[styles.input, styles.halfWidth]}
                       mode="outlined"
                     />
                     <TextInput
                       label="Country"
                       value={formData.location.country}
-                      onChangeText={(text) => handleInputChange('location.country', text)}
+                      onChangeText={(text) =>
+                        handleInputChange('location.country', text)
+                      }
                       style={[styles.input, styles.halfWidth]}
                       mode="outlined"
                     />
@@ -225,7 +249,9 @@ export default function AuthScreen() {
                   {/* User Type Selection */}
                   <Text style={styles.sectionTitle}>I am a:</Text>
                   <RadioButton.Group
-                    onValueChange={(value) => handleInputChange('userType', value)}
+                    onValueChange={(value) =>
+                      handleInputChange('userType', value)
+                    }
                     value={formData.userType}
                   >
                     <View style={styles.radioOption}>
@@ -299,7 +325,10 @@ export default function AuthScreen() {
                 contentStyle={styles.submitButtonContent}
               >
                 {isLoading ? (
-                  <ActivityIndicator size="small" color={theme.colors.onPrimary} />
+                  <ActivityIndicator
+                    size="small"
+                    color={theme.colors.onPrimary}
+                  />
                 ) : (
                   <Text style={styles.submitButtonText}>
                     {isLogin ? 'Sign In' : 'Create Account'}
@@ -309,7 +338,9 @@ export default function AuthScreen() {
 
               {/* Footer Text */}
               <Text style={styles.footerText}>
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                {isLogin
+                  ? "Don't have an account? "
+                  : "Already have an account? "}
                 <Text
                   style={styles.linkText}
                   onPress={() => setIsLogin(!isLogin)}

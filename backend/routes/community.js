@@ -11,13 +11,13 @@ router.get('/sectors/:sector', auth, async (req, res) => {
       data: {
         sector: req.params.sector,
         discussions: [],
-        members: 0
-      }
+        members: 0,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch community data'
+      message: 'Failed to fetch community data',
     });
   }
 });

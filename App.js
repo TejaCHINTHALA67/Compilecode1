@@ -29,13 +29,13 @@ function MainApp() {
 
   const HomeStack = () => (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="HomeMain" 
-        component={HomeScreen} 
+      <Stack.Screen
+        name="HomeMain"
+        component={HomeScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="StartupDetail" 
+      <Stack.Screen
+        name="StartupDetail"
         component={StartupDetailScreen}
         options={{ title: 'Startup Details' }}
       />
@@ -44,13 +44,13 @@ function MainApp() {
 
   const ExploreStack = () => (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="ExploreMain" 
-        component={ExploreScreen} 
+      <Stack.Screen
+        name="ExploreMain"
+        component={ExploreScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="StartupDetail" 
+      <Stack.Screen
+        name="StartupDetail"
         component={StartupDetailScreen}
         options={{ title: 'Startup Details' }}
       />
@@ -100,42 +100,42 @@ function MainApp() {
         },
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeStack}
         options={{ headerShown: false }}
       />
-      <Tab.Screen 
-        name="Explore" 
+      <Tab.Screen
+        name="Explore"
         component={ExploreStack}
         options={{ headerShown: false }}
       />
-      
+
       {/* Show Create tab only for entrepreneurs */}
       {(user?.userType === 'entrepreneur' || user?.userType === 'both') && (
-        <Tab.Screen 
-          name="Create" 
+        <Tab.Screen
+          name="Create"
           component={CreateStartupScreen}
           options={{ title: 'Create Startup' }}
         />
       )}
-      
+
       {/* Show Invest tab only for investors */}
       {(user?.userType === 'investor' || user?.userType === 'both') && (
-        <Tab.Screen 
-          name="Invest" 
+        <Tab.Screen
+          name="Invest"
           component={InvestorDashboard}
           options={{ title: 'Portfolio' }}
         />
       )}
-      
-      <Tab.Screen 
-        name="Community" 
+
+      <Tab.Screen
+        name="Community"
         component={CommunityScreen}
         options={{ title: 'Community' }}
       />
-      <Tab.Screen 
-        name="Profile" 
+      <Tab.Screen
+        name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile' }}
       />

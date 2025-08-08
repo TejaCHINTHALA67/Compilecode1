@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   ScrollView,
@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-} from 'react-native';
+} from "react-native";
 import {
   Text,
   Card,
@@ -17,23 +17,23 @@ import {
   IconButton,
   ActivityIndicator,
   ProgressBar,
-} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { analyticsAPI } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { theme } from '../styles/theme';
+} from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { analyticsAPI } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { theme } from "../styles/theme";
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
-export default function AIInsights({ 
-  targetId, 
-  targetType, 
-  analysisType, 
+export default function AIInsights({
+  targetId,
+  targetType,
+  analysisType,
   buttonStyle,
-  buttonText = "🤖 AI Insights",
+  buttonText = '🤖 AI Insights',
   visible,
   onDismiss,
-  trigger = 'button' // 'button' or 'modal'
+  trigger = "button", // 'button' or 'modal'
 }) {
   const [modalVisible, setModalVisible] = useState(visible || false);
   const [insights, setInsights] = useState(null);
@@ -43,22 +43,27 @@ export default function AIInsights({
 
   const handleGetInsights = async () => {
     if (!token || !targetId || !targetType || !analysisType) {
-      setError('Missing required information for AI analysis');
+      setError("Missing required information for AI analysis");
       return;
     }
 
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await analyticsAPI.getAIInsights(targetId, targetType, analysisType, token);
+      const response = await analyticsAPI.getAIInsights(
+        targetId,
+        targetType,
+        analysisType,
+        token
+      );
       setInsights(response.insights);
-      if (trigger === 'button') {
+      if (trigger === "button") {
         setModalVisible(true);
       }
     } catch (err) {
-      console.error('AI Insights error:', err);
-      setError(err.response?.data?.message || 'Failed to generate AI insights');
+      console.error("AI Insights error:", err);
+      setError(err.response?.data?.message || "Failed to generate AI insights");
     } finally {
       setLoading(false);
     }
@@ -79,7 +84,7 @@ export default function AIInsights({
   }, [visible]);
 
   const renderInsightsSummary = () => {
-    if (!insights || !insights.summary) return null;
+    if (!insights || !insights.summary) {return null;}
 
     return (
       <Card style={styles.summaryCard}>
@@ -88,14 +93,19 @@ export default function AIInsights({
             <Icon name="auto-awesome" size={24} color={theme.colors.primary} />
             <Text style={styles.summaryTitle}>AI Analysis Summary</Text>
           </View>
-          
-          <Text style={styles.summaryOverview}>{insights.summary.overview}</Text>
-          
+
+          <Text style={styles.summaryOverview}>
+            {insights.summary.overview}
+
           <View style={styles.summarySection}>
             <Text style={styles.sectionTitle}>Key Findings:</Text>
             {insights.summary.keyFindings.map((finding, index) => (
               <View key={index} style={styles.findingItem}>
-                <Icon name="check-circle" size={16} color={theme.colors.success} />
+                <Icon
+                  name="check-circle"
+                  size={16}
+                  color={theme.colors.success}
+                />
                 <Text style={styles.findingText}>{finding}</Text>
               </View>
             ))}
@@ -116,55 +126,68 @@ export default function AIInsights({
   };
 
   const renderInvestorRecommendations = () => {
-    if (insights?.type !== 'investor_analysis' || !insights.recommendations) return null;
+    if (insights?.type !== "investor_analysis" || !insights.recommendations)
+      {return null;}
 
     return (
       <View style={styles.recommendationsSection}>
         <Text style={styles.sectionTitle}>🎯 Recommended Investors</Text>
-        
+
         {insights.recommendations.map((rec, index) => (
           <Card key={rec.investor.id} style={styles.investorCard}>
             <Card.Content>
               <View style={styles.investorHeader}>
                 <Image
-                  source={{ uri: rec.investor.profilePicture || 'https://via.placeholder.com/50' }}
+                  source={{
+                    uri:
+                      rec.investor.profilePicture ||
+                      "https://via.placeholder.com/50",
+                  }}
                   style={styles.investorAvatar}
                 />
                 <View style={styles.investorInfo}>
                   <Text style={styles.investorName}>{rec.investor.name}</Text>
                   <Text style={styles.investorStats}>
-                    {rec.investor.totalInvestments} investments • 
-                    Avg: ${Math.round(rec.investor.averageInvestment).toLocaleString()}
+                    {rec.investor.totalInvestments} investments •
+                    {Math.round(
+                      rec.investor.averageInvestment
+                    ).toLocaleString()}
                   </Text>
                 </View>
                 <View style={styles.compatibilityScore}>
-                  <Text style={styles.scoreText}>{rec.compatibilityScore}%</Text>
+                  <Text style={styles.scoreText}>
+                    {rec.compatibilityScore}%
+                  </Text>
                   <Text style={styles.scoreLabel}>Match</Text>
                 </View>
               </View>
 
               <View style={styles.investorSectors}>
-                {rec.investor.preferredSectors.slice(0, 3).map((sector, idx) => (
-                  <Chip key={idx} mode="outlined" style={styles.sectorChip}>
-                    {sector}
-                  </Chip>
-                ))}
+                {rec.investor.preferredSectors
+                  .slice(0, 3)
+                  .map((sector, idx) => (
+                    <Chip key={idx} mode="outlined" style={styles.sectorChip}>
+                      {sector}
+                    </Chip>
+                  ))}
               </View>
 
               <View style={styles.reasoningSection}>
                 <Text style={styles.reasoningTitle}>Why this investor:</Text>
                 {rec.reasoning.map((reason, idx) => (
-                  <Text key={idx} style={styles.reasoningText}>• {reason}</Text>
+                  <Text key={idx} style={styles.reasoningText}>
+                    • {reason}
+                  </Text>
                 ))}
               </View>
 
               <ProgressBar
                 progress={rec.compatibilityScore / 100}
                 color={
-                  rec.compatibilityScore > 75 
-                    ? theme.colors.success 
-                    : rec.compatibilityScore > 50 
-                    ? theme.colors.warning 
+                  rec.compatibilityScore > 75
+                    ? theme.colors.success
+                    : rec.compatibilityScore > 50
+                    ? theme.colors.warning
                     : theme.colors.error
                 }
                 style={styles.compatibilityBar}
@@ -177,23 +200,28 @@ export default function AIInsights({
   };
 
   const renderStartupRecommendations = () => {
-    if (insights?.type !== 'startup_analysis' || !insights.recommendations) return null;
+    if (insights?.type !== "startup_analysis" || !insights.recommendations)
+      {return null;}
 
     return (
       <View style={styles.recommendationsSection}>
         <Text style={styles.sectionTitle}>💡 Recommended Startups</Text>
-        
+
         {insights.recommendations.map((rec, index) => (
           <Card key={rec.startup.id} style={styles.startupCard}>
             <Card.Content>
               <View style={styles.startupHeader}>
                 <Image
-                  source={{ uri: rec.startup.logo || 'https://via.placeholder.com/60' }}
+                  source={{
+                    uri: rec.startup.logo || "https://via.placeholder.com/60",
+                  }}
                   style={styles.startupLogo}
                 />
                 <View style={styles.startupInfo}>
                   <Text style={styles.startupName}>{rec.startup.name}</Text>
-                  <Text style={styles.startupTagline}>{rec.startup.tagline}</Text>
+                  <Text style={styles.startupTagline}>
+                    {rec.startup.tagline}
+                  </Text>
                   <View style={styles.startupMeta}>
                     <Chip mode="outlined" style={styles.sectorChip}>
                       {rec.startup.sector}
@@ -204,14 +232,17 @@ export default function AIInsights({
                   </View>
                 </View>
                 <View style={styles.compatibilityScore}>
-                  <Text style={styles.scoreText}>{rec.compatibilityScore}%</Text>
+                  <Text style={styles.scoreText}>
+                    {rec.compatibilityScore}%
+                  </Text>
                   <Text style={styles.scoreLabel}>Match</Text>
                 </View>
               </View>
 
               <View style={styles.fundingProgress}>
                 <Text style={styles.fundingText}>
-                  ${rec.startup.fundingProgress.current.toLocaleString()} of ${rec.startup.fundingProgress.target.toLocaleString()}
+                  ${rec.startup.fundingProgress.current.toLocaleString()} of $
+                  {rec.startup.fundingProgress.target.toLocaleString()}
                 </Text>
                 <ProgressBar
                   progress={rec.startup.fundingProgress.percentage / 100}
@@ -225,40 +256,59 @@ export default function AIInsights({
 
               <View style={styles.analysisSection}>
                 <View style={styles.riskAssessment}>
-                  <Text style={styles.riskTitle}>Risk Level: 
-                    <Text style={[
-                      styles.riskLevel,
-                      { color: rec.riskAssessment.level === 'Low' ? theme.colors.success : 
-                               rec.riskAssessment.level === 'Medium' ? theme.colors.warning : 
-                               theme.colors.error }
-                    ]}> {rec.riskAssessment.level}</Text>
+                  <Text style={styles.riskTitle}>
+                    Risk Level:
+                    <Text
+                      style={[
+                        styles.riskLevel,
+                        {
+                          color:
+                            rec.riskAssessment.level === "Low"
+                              ? theme.colors.success
+                              : rec.riskAssessment.level === "Medium"
+                              ? theme.colors.warning
+                              : theme.colors.error,
+                        },
+                      ]}
+                    >
+                      {" "}
+                      {rec.riskAssessment.level}
+                    </Text>
                   </Text>
                   {rec.riskAssessment.factors.map((factor, idx) => (
-                    <Text key={idx} style={styles.riskFactor}>• {factor}</Text>
+                    <Text key={idx} style={styles.riskFactor}>
+                      • {factor}
+                    </Text>
                   ))}
                 </View>
 
                 <View style={styles.potentialReturns}>
                   <Text style={styles.returnsTitle}>Potential Returns:</Text>
-                  <Text style={styles.returnsMultiplier}>{rec.potentialReturns.estimatedMultiplier}</Text>
-                  <Text style={styles.returnsTimeframe}>{rec.potentialReturns.timeframe}</Text>
+                  <Text style={styles.returnsMultiplier}>
+                    {rec.potentialReturns.estimatedMultiplier}
+                  </Text>
+                  <Text style={styles.returnsTimeframe}>
+                    {rec.potentialReturns.timeframe}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.reasoningSection}>
                 <Text style={styles.reasoningTitle}>Why this startup:</Text>
                 {rec.reasoning.map((reason, idx) => (
-                  <Text key={idx} style={styles.reasoningText}>• {reason}</Text>
+                  <Text key={idx} style={styles.reasoningText}>
+                    • {reason}
+                  </Text>
                 ))}
               </View>
 
               <ProgressBar
                 progress={rec.compatibilityScore / 100}
                 color={
-                  rec.compatibilityScore > 75 
-                    ? theme.colors.success 
-                    : rec.compatibilityScore > 50 
-                    ? theme.colors.warning 
+                  rec.compatibilityScore > 75
+                    ? theme.colors.success
+                    : rec.compatibilityScore > 50
+                    ? theme.colors.warning
                     : theme.colors.error
                 }
                 style={styles.compatibilityBar}
@@ -286,7 +336,11 @@ export default function AIInsights({
         <View style={styles.errorContainer}>
           <Icon name="error-outline" size={48} color={theme.colors.error} />
           <Text style={styles.errorText}>{error}</Text>
-          <Button mode="outlined" onPress={handleGetInsights} style={styles.retryButton}>
+          <Button
+            mode="outlined"
+            onPress={handleGetInsights}
+            style={styles.retryButton}
+          >
             Try Again
           </Button>
         </View>
@@ -299,9 +353,14 @@ export default function AIInsights({
           <Icon name="psychology" size={64} color={theme.colors.primary} />
           <Text style={styles.emptyTitle}>AI-Powered Insights</Text>
           <Text style={styles.emptyText}>
-            Get personalized recommendations and analysis powered by artificial intelligence
+            Get personalized recommendations and analysis powered by artificial
+            intelligence
           </Text>
-          <Button mode="contained" onPress={handleGetInsights} style={styles.generateButton}>
+          <Button
+            mode="contained"
+            onPress={handleGetInsights}
+            style={styles.generateButton}
+          >
             Generate Insights
           </Button>
         </View>
@@ -309,21 +368,25 @@ export default function AIInsights({
     }
 
     return (
-      <ScrollView style={styles.contentScroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.contentScroll}
+        showsVerticalScrollIndicator={false}
+      >
         {renderInsightsSummary()}
         {renderInvestorRecommendations()}
         {renderStartupRecommendations()}
-        
+
         <View style={styles.timestampContainer}>
           <Text style={styles.timestamp}>
-            Analysis generated on {new Date(insights.analysisTimestamp).toLocaleString()}
+            Analysis generated on{" "}
+            {new Date(insights.analysisTimestamp).toLocaleString()}
           </Text>
         </View>
       </ScrollView>
     );
   };
 
-  if (trigger === 'button') {
+  if (trigger === "button") {
     return (
       <>
         <Button
@@ -377,23 +440,23 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.primary,
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     margin: 20,
     borderRadius: 12,
-    maxHeight: '90%',
+    maxHeight: "90%",
     elevation: 5,
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.onSurface,
   },
   contentScroll: {
@@ -402,13 +465,13 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   loadingText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 16,
     color: theme.colors.onSurface,
   },
@@ -419,14 +482,14 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   errorText: {
     fontSize: 16,
     color: theme.colors.error,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 16,
   },
   retryButton: {
@@ -434,20 +497,20 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
   },
   emptyTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 16,
     color: theme.colors.onSurface,
   },
   emptyText: {
     fontSize: 16,
     color: theme.colors.onSurfaceVariant,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 16,
     lineHeight: 24,
   },
@@ -460,13 +523,13 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primaryContainer,
   },
   summaryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
   },
   summaryTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 8,
     color: theme.colors.onPrimaryContainer,
   },
@@ -481,13 +544,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
     color: theme.colors.onSurface,
   },
   findingItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   findingText: {
@@ -505,8 +568,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   investorHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
   },
   investorAvatar: {
@@ -520,7 +583,7 @@ const styles = StyleSheet.create({
   },
   investorName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: theme.colors.onSurface,
   },
   investorStats: {
@@ -529,8 +592,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   investorSectors: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 12,
   },
   sectorChip: {
@@ -538,7 +601,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   compatibilityScore: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: theme.colors.secondaryContainer,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -546,7 +609,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.onSecondaryContainer,
   },
   scoreLabel: {
@@ -558,7 +621,7 @@ const styles = StyleSheet.create({
   },
   reasoningTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 6,
     color: theme.colors.onSurface,
   },
@@ -576,8 +639,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   startupHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     marginBottom: 12,
   },
   startupLogo: {
@@ -591,7 +654,7 @@ const styles = StyleSheet.create({
   },
   startupName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: theme.colors.onSurface,
   },
   startupTagline: {
@@ -601,8 +664,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   startupMeta: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   stageChip: {
     marginLeft: 8,
@@ -612,7 +675,7 @@ const styles = StyleSheet.create({
   },
   fundingText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 6,
     color: theme.colors.onSurface,
   },
@@ -626,7 +689,7 @@ const styles = StyleSheet.create({
     color: theme.colors.onSurfaceVariant,
   },
   analysisSection: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 12,
   },
   riskAssessment: {
@@ -635,12 +698,12 @@ const styles = StyleSheet.create({
   },
   riskTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
     color: theme.colors.onSurface,
   },
   riskLevel: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   riskFactor: {
     fontSize: 12,
@@ -648,7 +711,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   potentialReturns: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: theme.colors.tertiaryContainer,
     padding: 12,
     borderRadius: 8,
@@ -660,7 +723,7 @@ const styles = StyleSheet.create({
   },
   returnsMultiplier: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.onTertiaryContainer,
   },
   returnsTimeframe: {
@@ -668,15 +731,15 @@ const styles = StyleSheet.create({
     color: theme.colors.onTertiaryContainer,
   },
   timestampContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: "#e0e0e0",
     marginTop: 16,
   },
   timestamp: {
     fontSize: 12,
     color: theme.colors.onSurfaceVariant,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });

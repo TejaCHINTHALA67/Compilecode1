@@ -63,50 +63,58 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleLike = async (startupId) => {
-    if (!token) return;
-    
+    if (!token) {
+      return;
+    }
+
     try {
       await startupsAPI.like(startupId, token);
       // Update local state
-      setStartups(prev => prev.map(startup => 
-        startup._id === startupId 
-          ? { 
-              ...startup, 
-              isLiked: !startup.isLiked,
-              engagement: {
-                ...startup.engagement,
-                likes: startup.isLiked 
-                  ? startup.engagement.likes - 1 
-                  : startup.engagement.likes + 1
+      setStartups((prev) =>
+        prev.map((startup) =>
+          startup._id === startupId
+            ? {
+                ...startup,
+                isLiked: !startup.isLiked,
+                engagement: {
+                  ...startup.engagement,
+                  likes: startup.isLiked
+                    ? startup.engagement.likes - 1
+                    : startup.engagement.likes + 1,
+                },
               }
-            }
-          : startup
-      ));
+            : startup
+        )
+      );
     } catch (error) {
       console.error('Error liking startup:', error);
     }
   };
 
   const handleBookmark = async (startupId) => {
-    if (!token) return;
-    
+    if (!token) {
+      return;
+    }
+
     try {
       await startupsAPI.bookmark(startupId, token);
       // Update local state
-      setStartups(prev => prev.map(startup => 
-        startup._id === startupId 
-          ? { 
-              ...startup, 
-              isBookmarked: !startup.isBookmarked,
-              engagement: {
-                ...startup.engagement,
-                bookmarks: startup.isBookmarked 
-                  ? startup.engagement.bookmarks - 1 
-                  : startup.engagement.bookmarks + 1
+      setStartups((prev) =>
+        prev.map((startup) =>
+          startup._id === startupId
+            ? {
+                ...startup,
+                isBookmarked: !startup.isBookmarked,
+                engagement: {
+                  ...startup.engagement,
+                  bookmarks: startup.isBookmarked
+                    ? startup.engagement.bookmarks - 1
+                    : startup.engagement.bookmarks + 1,
+                },
               }
-            }
-          : startup
-      ));
+            : startup
+        )
+      );
     } catch (error) {
       console.error('Error bookmarking startup:', error);
     }
@@ -123,14 +131,14 @@ export default function HomeScreen({ navigation }) {
 
   const getSectorColor = (sector) => {
     const colors = {
-      'AI': '#6366F1',
-      'Health': '#10B981',
-      'Climate': '#059669',
-      'EdTech': '#F59E0B',
-      'FinTech': '#EF4444',
+      AI: '#6366F1',
+      Health: '#10B981',
+      Climate: '#059669',
+      EdTech: '#F59E0B',
+      FinTech: '#EF4444',
       'E-commerce': '#8B5CF6',
-      'Gaming': '#EC4899',
-      'Other': '#6B7280',
+      Gaming: '#EC4899',
+      Other: '#6B7280',
     };
     return colors[sector] || colors.Other;
   };
@@ -164,7 +172,9 @@ export default function HomeScreen({ navigation }) {
           <IconButton
             icon="notifications-outline"
             size={24}
-            onPress={() => {/* Navigate to notifications */}}
+            onPress={() => {
+              /* Navigate to notifications */
+            }}
           />
         </View>
       </View>
@@ -182,10 +192,16 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity
                 key={startup._id}
                 style={styles.featuredCard}
-                onPress={() => navigation.navigate('StartupDetail', { startupId: startup._id })}
+                onPress={() =>
+                  navigation.navigate('StartupDetail', {
+                    startupId: startup._id,
+                  })
+                }
               >
                 <Image
-                  source={{ uri: startup.logo || 'https://via.placeholder.com/100' }}
+                  source={{
+                    uri: startup.logo || 'https://via.placeholder.com/100',
+                  }}
                   style={styles.featuredLogo}
                 />
                 <Text style={styles.featuredName} numberOfLines={1}>
@@ -193,8 +209,14 @@ export default function HomeScreen({ navigation }) {
                 </Text>
                 <Chip
                   mode="outlined"
-                  style={[styles.featuredSector, { borderColor: getSectorColor(startup.sector) }]}
-                  textStyle={{ color: getSectorColor(startup.sector), fontSize: 10 }}
+                  style={[
+                    styles.featuredSector,
+                    { borderColor: getSectorColor(startup.sector) },
+                  ]}
+                  textStyle={{
+                    color: getSectorColor(startup.sector),
+                    fontSize: 10,
+                  }}
                 >
                   {startup.sector}
                 </Chip>
@@ -207,15 +229,17 @@ export default function HomeScreen({ navigation }) {
       {/* Main Feed */}
       <View style={styles.feedSection}>
         <Text style={styles.sectionTitle}>🔥 Trending Startups</Text>
-        
+
         {startups.map((startup) => (
           <Card key={startup._id} style={styles.startupCard}>
             {/* Header */}
             <View style={styles.cardHeader}>
               <View style={styles.founderInfo}>
                 <Image
-                  source={{ 
-                    uri: startup.founder?.profilePicture || 'https://via.placeholder.com/40' 
+                  source={{
+                    uri:
+                      startup.founder?.profilePicture ||
+                      'https://via.placeholder.com/40',
                   }}
                   style={styles.founderAvatar}
                 />
@@ -231,16 +255,22 @@ export default function HomeScreen({ navigation }) {
               <IconButton
                 icon="more-vert"
                 size={20}
-                onPress={() => {/* Show options menu */}}
+                onPress={() => {
+                  /* Show options menu */
+                }}
               />
             </View>
 
             {/* Startup Image/Video */}
             <TouchableOpacity
-              onPress={() => navigation.navigate('StartupDetail', { startupId: startup._id })}
+              onPress={() =>
+                navigation.navigate('StartupDetail', { startupId: startup._id })
+              }
             >
               <Image
-                source={{ uri: startup.logo || 'https://via.placeholder.com/400x200' }}
+                source={{
+                  uri: startup.logo || 'https://via.placeholder.com/400x200',
+                }}
                 style={styles.startupImage}
                 resizeMode="cover"
               />
@@ -257,24 +287,38 @@ export default function HomeScreen({ navigation }) {
                 <IconButton
                   icon={startup.isLiked ? "favorite" : "favorite-border"}
                   size={24}
-                  iconColor={startup.isLiked ? theme.colors.error : theme.colors.onSurface}
+                  iconColor={
+                    startup.isLiked
+                      ? theme.colors.error
+                      : theme.colors.onSurface
+                  }
                   onPress={() => handleLike(startup._id)}
                 />
                 <IconButton
                   icon="chat-bubble-outline"
                   size={24}
-                  onPress={() => navigation.navigate('StartupDetail', { startupId: startup._id })}
+                  onPress={() =>
+                    navigation.navigate('StartupDetail', {
+                      startupId: startup._id,
+                    })
+                  }
                 />
                 <IconButton
                   icon="share"
                   size={24}
-                  onPress={() => {/* Share functionality */}}
+                  onPress={() => {
+                    /* Share functionality */
+                  }}
                 />
               </View>
               <IconButton
                 icon={startup.isBookmarked ? "bookmark" : "bookmark-border"}
                 size={24}
-                iconColor={startup.isBookmarked ? theme.colors.primary : theme.colors.onSurface}
+                iconColor={
+                  startup.isBookmarked
+                    ? theme.colors.primary
+                    : theme.colors.onSurface
+                }
                 onPress={() => handleBookmark(startup._id)}
               />
             </View>
@@ -283,7 +327,8 @@ export default function HomeScreen({ navigation }) {
             <Card.Content style={styles.cardContent}>
               {/* Engagement Stats */}
               <Text style={styles.engagementText}>
-                {startup.engagement?.likes || 0} likes • {startup.engagement?.views || 0} views
+                {startup.engagement?.likes || 0} likes •{' '}
+                {startup.engagement?.views || 0} views
               </Text>
 
               {/* Startup Info */}
@@ -292,8 +337,16 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.startupName}>{startup.name}</Text>
                   <Chip
                     mode="flat"
-                    style={[styles.sectorChip, { backgroundColor: getSectorColor(startup.sector) + '20' }]}
-                    textStyle={{ color: getSectorColor(startup.sector), fontSize: 12 }}
+                    style={[
+                      styles.sectorChip,
+                      {
+                        backgroundColor: getSectorColor(startup.sector) + '20',
+                      },
+                    ]}
+                    textStyle={{
+                      color: getSectorColor(startup.sector),
+                      fontSize: 12,
+                    }}
                   >
                     {startup.sector}
                   </Chip>
@@ -309,13 +362,22 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.fundingHeader}>
                   <Text style={styles.fundingLabel}>Funding Progress</Text>
                   <Text style={styles.fundingAmount}>
-                    {formatCurrency(startup.funding?.currentAmount || 0, startup.funding?.currency)} 
+                    {formatCurrency(
+                      startup.funding?.currentAmount || 0,
+                      startup.funding?.currency
+                    )}
                     {' of '}
-                    {formatCurrency(startup.funding?.targetAmount || 0, startup.funding?.currency)}
+                    {formatCurrency(
+                      startup.funding?.targetAmount || 0,
+                      startup.funding?.currency
+                    )}
                   </Text>
                 </View>
                 <ProgressBar
-                  progress={(startup.funding?.currentAmount || 0) / (startup.funding?.targetAmount || 1)}
+                  progress={
+                    (startup.funding?.currentAmount || 0) /
+                    (startup.funding?.targetAmount || 1)
+                  }
                   color={theme.colors.success}
                   style={styles.progressBar}
                 />
@@ -334,10 +396,12 @@ export default function HomeScreen({ navigation }) {
                 <Button
                   mode="contained"
                   style={styles.investButton}
-                  onPress={() => navigation.navigate('StartupDetail', { 
-                    startupId: startup._id, 
-                    showInvestModal: true 
-                  })}
+                  onPress={() =>
+                    navigation.navigate('StartupDetail', {
+                      startupId: startup._id,
+                      showInvestModal: true,
+                    })
+                  }
                 >
                   Invest Now
                 </Button>
@@ -345,7 +409,11 @@ export default function HomeScreen({ navigation }) {
                 <Button
                   mode="outlined"
                   style={styles.viewButton}
-                  onPress={() => navigation.navigate('StartupDetail', { startupId: startup._id })}
+                  onPress={() =>
+                    navigation.navigate('StartupDetail', {
+                      startupId: startup._id,
+                    })
+                  }
                 >
                   View Details
                 </Button>

@@ -17,13 +17,9 @@ export default function ProfileScreen() {
         <Text style={styles.email}>{user?.email}</Text>
         <Text style={styles.userType}>User Type: {user?.userType}</Text>
       </View>
-      
+
       <View style={styles.footer}>
-        <Button
-          mode="contained"
-          onPress={logout}
-          style={styles.logoutButton}
-        >
+        <Button mode="contained" onPress={logout} style={styles.logoutButton}>
           Logout
         </Button>
       </View>

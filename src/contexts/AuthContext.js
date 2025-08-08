@@ -28,7 +28,7 @@ function authReducer(state, action) {
         ...state,
         isLoading: action.payload,
       };
-    
+
     case AUTH_ACTIONS.LOGIN_SUCCESS:
       return {
         ...state,
@@ -37,7 +37,7 @@ function authReducer(state, action) {
         isLoading: false,
         error: null,
       };
-    
+
     case AUTH_ACTIONS.LOGOUT:
       return {
         ...state,
@@ -46,26 +46,26 @@ function authReducer(state, action) {
         isLoading: false,
         error: null,
       };
-    
+
     case AUTH_ACTIONS.SET_ERROR:
       return {
         ...state,
         error: action.payload,
         isLoading: false,
       };
-    
+
     case AUTH_ACTIONS.CLEAR_ERROR:
       return {
         ...state,
         error: null,
       };
-    
+
     case AUTH_ACTIONS.UPDATE_USER:
       return {
         ...state,
         user: { ...state.user, ...action.payload },
       };
-    
+
     default:
       return state;
   }
@@ -87,10 +87,10 @@ export function AuthProvider({ children }) {
     try {
       const token = await AsyncStorage.getItem('token');
       const userData = await AsyncStorage.getItem('user');
-      
+
       if (token && userData) {
         const user = JSON.parse(userData);
-        
+
         // Verify token is still valid
         try {
           const response = await authAPI.getProfile(token);
@@ -137,21 +137,22 @@ export function AuthProvider({ children }) {
     try {
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-      
+
       const response = await authAPI.register(userData);
-      
+
       const { user, token } = response.data;
-      
+
       await storeAuth(token, user);
-      
+
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: { user, token },
       });
-      
+
       return { success: true };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
+      const errorMessage =
+        error.response?.data?.message || 'Registration failed';
       dispatch({
         type: AUTH_ACTIONS.SET_ERROR,
         payload: errorMessage,
@@ -164,18 +165,18 @@ export function AuthProvider({ children }) {
     try {
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-      
+
       const response = await authAPI.login(email, password);
-      
+
       const { user, token } = response.data;
-      
+
       await storeAuth(token, user);
-      
+
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: { user, token },
       });
-      
+
       return { success: true };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Login failed';
@@ -192,12 +193,13 @@ export function AuthProvider({ children }) {
     try {
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-      
+
       const response = await authAPI.loginWithOTP(email, uniqueId);
-      
+
       return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to send OTP';
+      const errorMessage =
+        error.response?.data?.message || 'Failed to send OTP';
       dispatch({
         type: AUTH_ACTIONS.SET_ERROR,
         payload: errorMessage,
@@ -212,21 +214,22 @@ export function AuthProvider({ children }) {
     try {
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-      
+
       const response = await authAPI.verifyOTP(email, uniqueId, otp);
-      
+
       const { user, token } = response.data;
-      
+
       await storeAuth(token, user);
-      
+
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: { user, token },
       });
-      
+
       return { success: true };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'OTP verification failed';
+      const errorMessage =
+        error.response?.data?.message || 'OTP verification failed';
       dispatch({
         type: AUTH_ACTIONS.SET_ERROR,
         payload: errorMessage,
@@ -251,20 +254,21 @@ export function AuthProvider({ children }) {
   const updateProfile = async (profileData) => {
     try {
       const response = await authAPI.updateProfile(profileData, state.token);
-      
+
       const updatedUser = response.data;
-      
+
       // Update stored user data
       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-      
+
       dispatch({
         type: AUTH_ACTIONS.UPDATE_USER,
         payload: updatedUser,
       });
-      
+
       return { success: true, user: updatedUser };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Profile update failed';
+      const errorMessage =
+        error.response?.data?.message || 'Profile update failed';
       return { success: false, error: errorMessage };
     }
   };
@@ -274,7 +278,8 @@ export function AuthProvider({ children }) {
       await authAPI.changePassword(currentPassword, newPassword, state.token);
       return { success: true };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Password change failed';
+      const errorMessage =
+        error.response?.data?.message || 'Password change failed';
       return { success: false, error: errorMessage };
     }
   };
@@ -285,7 +290,8 @@ export function AuthProvider({ children }) {
       const response = await authAPI.uploadDocuments(documents, state.token);
       return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Document upload failed';
+      const errorMessage =
+        error.response?.data?.message || 'Document upload failed';
       return { success: false, error: errorMessage };
     }
   };
@@ -295,7 +301,8 @@ export function AuthProvider({ children }) {
       const response = await authAPI.getRequiredDocuments(userType);
       return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to get required documents';
+      const errorMessage =
+        error.response?.data?.message || 'Failed to get required documents';
       return { success: false, error: errorMessage };
     }
   };
@@ -318,11 +325,7 @@ export function AuthProvider({ children }) {
     clearError,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // Hook to use auth context

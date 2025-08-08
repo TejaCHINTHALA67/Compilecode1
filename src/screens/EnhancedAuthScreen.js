@@ -53,12 +53,20 @@ export default function EnhancedAuthScreen() {
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [selectedDocumentType, setSelectedDocumentType] = useState(null);
 
-  const { login, register, loginWithOTP, verifyOTP, isLoading: authLoading, error, clearError } = useAuth();
+  const {
+    login,
+    register,
+    loginWithOTP,
+    verifyOTP,
+    isLoading: authLoading,
+    error,
+    clearError,
+  } = useAuth();
 
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
@@ -66,7 +74,7 @@ export default function EnhancedAuthScreen() {
         },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [field]: value,
       }));
@@ -90,8 +98,14 @@ export default function EnhancedAuthScreen() {
     }
 
     if (authMode === 'register') {
-      if (!formData.email || !formData.password || !formData.firstName || 
-          !formData.lastName || !formData.phoneNumber || !formData.dateOfBirth) {
+      if (
+        !formData.email ||
+        !formData.password ||
+        !formData.firstName ||
+        !formData.lastName ||
+        !formData.phoneNumber ||
+        !formData.dateOfBirth
+      ) {
         showMessage('Please fill in all required fields');
         return false;
       }
@@ -109,7 +123,9 @@ export default function EnhancedAuthScreen() {
       // Basic age validation (18+)
       if (formData.dateOfBirth) {
         const birthDate = new Date(formData.dateOfBirth);
-        const age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        const age = Math.floor(
+          (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+        );
         if (age < 18) {
           showMessage('You must be at least 18 years old to register');
           return false;
@@ -133,7 +149,9 @@ export default function EnhancedAuthScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     clearError();
     setIsLoading(true);
@@ -148,7 +166,9 @@ export default function EnhancedAuthScreen() {
         case 'register':
           result = await register(formData);
           if (result.success) {
-            showMessage('Account created successfully! Check your email for your Unique ID.');
+            showMessage(
+              'Account created successfully! Check your email for your Unique ID.'
+            );
             setAuthMode('login');
           }
           break;
@@ -192,7 +212,7 @@ export default function EnhancedAuthScreen() {
         uploadedAt: new Date(),
       };
 
-      setDocuments(prev => [...prev, newDocument]);
+      setDocuments((prev) => [...prev, newDocument]);
       setShowDocumentModal(false);
       setSelectedDocumentType(null);
       showMessage('Document uploaded successfully');
@@ -206,22 +226,30 @@ export default function EnhancedAuthScreen() {
   const getRequiredDocuments = (userType) => {
     const docs = {
       entrepreneur: [
-        { type: 'business_registration', name: 'Business Registration', required: true },
+        {
+          type: 'business_registration',
+          name: 'Business Registration',
+          required: true,
+        },
         { type: 'pitch_deck', name: 'Pitch Deck', required: true },
-        { type: 'passport', name: 'Passport/ID', required: true }
+        { type: 'passport', name: 'Passport/ID', required: true },
       ],
       investor: [
         { type: 'proof_of_funds', name: 'Proof of Funds', required: true },
         { type: 'intent_letter', name: 'Intent Letter', required: true },
-        { type: 'passport', name: 'Passport/ID', required: true }
+        { type: 'passport', name: 'Passport/ID', required: true },
       ],
       both: [
-        { type: 'business_registration', name: 'Business Registration', required: false },
+        {
+          type: 'business_registration',
+          name: 'Business Registration',
+          required: false,
+        },
         { type: 'pitch_deck', name: 'Pitch Deck', required: false },
         { type: 'proof_of_funds', name: 'Proof of Funds', required: true },
         { type: 'intent_letter', name: 'Intent Letter', required: true },
-        { type: 'passport', name: 'Passport/ID', required: true }
-      ]
+        { type: 'passport', name: 'Passport/ID', required: true },
+      ],
     };
     return docs[userType] || [];
   };
@@ -293,7 +321,9 @@ export default function EnhancedAuthScreen() {
       <TextInput
         label="Unique ID"
         value={formData.uniqueId}
-        onChangeText={(text) => handleInputChange('uniqueId', text.toUpperCase())}
+        onChangeText={(text) =>
+          handleInputChange('uniqueId', text.toUpperCase())
+        }
         style={styles.input}
         mode="outlined"
         autoCapitalize="characters"
@@ -327,9 +357,7 @@ export default function EnhancedAuthScreen() {
   const renderOTPVerifyForm = () => (
     <>
       <View style={styles.otpInfo}>
-        <Text style={styles.otpInfoText}>
-          We've sent a 6-digit code to:
-        </Text>
+        <Text style={styles.otpInfoText}>We've sent a 6-digit code to:</Text>
         <Text style={styles.otpEmail}>{formData.email}</Text>
       </View>
 
@@ -604,7 +632,10 @@ export default function EnhancedAuthScreen() {
                   <Button
                     mode={authMode === 'login' ? 'contained' : 'outlined'}
                     onPress={() => setAuthMode('login')}
-                    style={[styles.toggleButton, authMode === 'login' && styles.activeToggle]}
+                    style={[
+                      styles.toggleButton,
+                      authMode === 'login' && styles.activeToggle,
+                    ]}
                     compact
                   >
                     Sign In
@@ -612,7 +643,10 @@ export default function EnhancedAuthScreen() {
                   <Button
                     mode={authMode === 'register' ? 'contained' : 'outlined'}
                     onPress={() => setAuthMode('register')}
-                    style={[styles.toggleButton, authMode === 'register' && styles.activeToggle]}
+                    style={[
+                      styles.toggleButton,
+                      authMode === 'register' && styles.activeToggle,
+                    ]}
                     compact
                   >
                     Sign Up
@@ -625,10 +659,14 @@ export default function EnhancedAuthScreen() {
               {/* Footer Text - Only show for login/register */}
               {(authMode === 'login' || authMode === 'register') && (
                 <Text style={styles.footerText}>
-                  {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
+                  {authMode === 'login'
+                    ? "Don't have an account? "
+                    : "Already have an account? "}
                   <Text
                     style={styles.linkText}
-                    onPress={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                    onPress={() =>
+                      setAuthMode(authMode === 'login' ? 'register' : 'login')
+                    }
                   >
                     {authMode === 'login' ? 'Sign Up' : 'Sign In'}
                   </Text>
@@ -650,7 +688,7 @@ export default function EnhancedAuthScreen() {
           <Text style={styles.modalSubtitle}>
             Select document type and upload your file
           </Text>
-          
+
           <View style={styles.documentTypes}>
             {getRequiredDocuments(formData.userType).map((doc) => (
               <Chip

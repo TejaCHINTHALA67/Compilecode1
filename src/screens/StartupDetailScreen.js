@@ -63,14 +63,14 @@ export default function StartupDetailScreen({ route, navigation }) {
 
   const getSectorColor = (sector) => {
     const colors = {
-      'Technology': '#4CAF50',
-      'Healthcare': '#2196F3',
-      'Finance': '#FF9800',
-      'Education': '#9C27B0',
+      Technology: '#4CAF50',
+      Healthcare: '#2196F3',
+      Finance: '#FF9800',
+      Education: '#9C27B0',
       'E-commerce': '#F44336',
-      'Entertainment': '#E91E63',
+      Entertainment: '#E91E63',
       'Food & Beverage': '#795548',
-      'Travel': '#607D8B',
+      Travel: '#607D8B',
       'Real Estate': '#3F51B5',
     };
     return colors[sector] || '#757575';
@@ -90,8 +90,14 @@ export default function StartupDetailScreen({ route, navigation }) {
       <View style={[commonStyles.container, commonStyles.centerContent]}>
         <Icon name="error-outline" size={64} color={theme.colors.error} />
         <Text style={styles.errorTitle}>Startup Not Found</Text>
-        <Text style={styles.errorText}>{error || 'This startup could not be loaded'}</Text>
-        <Button mode="outlined" onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Text style={styles.errorText}>
+          {error || 'This startup could not be loaded'}
+        </Text>
+        <Button
+          mode="outlined"
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           Go Back
         </Button>
       </View>
@@ -116,8 +122,14 @@ export default function StartupDetailScreen({ route, navigation }) {
             <View style={styles.headerMeta}>
               <Chip
                 mode="flat"
-                style={[styles.sectorChip, { backgroundColor: getSectorColor(startup.sector) + '20' }]}
-                textStyle={{ color: getSectorColor(startup.sector), fontSize: 12 }}
+                style={[
+                  styles.sectorChip,
+                  { backgroundColor: getSectorColor(startup.sector) + '20' },
+                ]}
+                textStyle={{
+                  color: getSectorColor(startup.sector),
+                  fontSize: 12,
+                }}
               >
                 {startup.sector}
               </Chip>
@@ -146,29 +158,48 @@ export default function StartupDetailScreen({ route, navigation }) {
             <View style={styles.fundingInfo}>
               <View style={styles.fundingHeader}>
                 <Text style={styles.fundingAmount}>
-                  {formatCurrency(startup.funding?.currentAmount || 0, startup.funding?.currency)}
+                  {formatCurrency(
+                    startup.funding?.currentAmount || 0,
+                    startup.funding?.currency
+                  )}
                 </Text>
                 <Text style={styles.fundingTarget}>
-                  of {formatCurrency(startup.funding?.targetAmount || 0, startup.funding?.currency)}
+                  of{' '}
+                  {formatCurrency(
+                    startup.funding?.targetAmount || 0,
+                    startup.funding?.currency
+                  )}
                 </Text>
               </View>
               <ProgressBar
-                progress={(startup.funding?.currentAmount || 0) / (startup.funding?.targetAmount || 1)}
+                progress={
+                  (startup.funding?.currentAmount || 0) /
+                  (startup.funding?.targetAmount || 1)
+                }
                 color={theme.colors.primary}
                 style={styles.progressBar}
               />
               <View style={styles.fundingStats}>
                 <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{startup.funding?.investorCount || 0}</Text>
+                  <Text style={styles.statValue}>
+                    {startup.funding?.investorCount || 0}
+                  </Text>
                   <Text style={styles.statLabel}>Investors</Text>
                 </View>
                 <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{startup.daysRemaining || 0}</Text>
+                  <Text style={styles.statValue}>
+                    {startup.daysRemaining || 0}
+                  </Text>
                   <Text style={styles.statLabel}>Days Left</Text>
                 </View>
                 <View style={styles.statItem}>
                   <Text style={styles.statValue}>
-                    {Math.round(((startup.funding?.currentAmount || 0) / (startup.funding?.targetAmount || 1)) * 100)}%
+                    {Math.round(
+                      ((startup.funding?.currentAmount || 0) /
+                        (startup.funding?.targetAmount || 1)) *
+                        100
+                    )}
+                    %
                   </Text>
                   <Text style={styles.statLabel}>Funded</Text>
                 </View>
@@ -184,7 +215,11 @@ export default function StartupDetailScreen({ route, navigation }) {
               <Text style={styles.sectionTitle}>Founder</Text>
               <View style={styles.founderInfo}>
                 <Image
-                  source={{ uri: startup.founder.profilePicture || 'https://via.placeholder.com/60' }}
+                  source={{
+                    uri:
+                      startup.founder.profilePicture ||
+                      'https://via.placeholder.com/60',
+                  }}
                   style={styles.founderAvatar}
                 />
                 <View style={styles.founderDetails}>
@@ -204,7 +239,11 @@ export default function StartupDetailScreen({ route, navigation }) {
             <Card.Content>
               <Text style={styles.sectionTitle}>Location</Text>
               <View style={styles.locationInfo}>
-                <Icon name="location-on" size={20} color={theme.colors.primary} />
+                <Icon
+                  name="location-on"
+                  size={20}
+                  color={theme.colors.primary}
+                />
                 <Text style={styles.locationText}>
                   {startup.location.city}, {startup.location.country}
                 </Text>
@@ -218,11 +257,16 @@ export default function StartupDetailScreen({ route, navigation }) {
           <Card style={styles.card}>
             <Card.Content>
               <View style={styles.aiInsightsHeader}>
-                <Icon name="psychology" size={24} color={theme.colors.primary} />
+                <Icon
+                  name="psychology"
+                  size={24}
+                  color={theme.colors.primary}
+                />
                 <Text style={styles.sectionTitle}>AI Investment Analysis</Text>
               </View>
               <Text style={styles.aiInsightsDescription}>
-                Get AI-powered insights about this startup's investment potential and similar investor profiles.
+                Get AI-powered insights about this startup's investment
+                potential and similar investor profiles.
               </Text>
               <AIInsights
                 targetId={startup._id}
@@ -241,7 +285,8 @@ export default function StartupDetailScreen({ route, navigation }) {
             <Card.Content>
               <Text style={styles.investmentTitle}>Ready to Invest?</Text>
               <Text style={styles.investmentSubtitle}>
-                Join {startup.funding?.investorCount || 0} other investors backing this startup
+                Join {startup.funding?.investorCount || 0} other investors
+                backing this startup
               </Text>
               <Button
                 mode="contained"
@@ -264,7 +309,8 @@ export default function StartupDetailScreen({ route, navigation }) {
               <View style={styles.entrepreneurInfo}>
                 <Icon name="lightbulb" size={24} color={theme.colors.warning} />
                 <Text style={styles.entrepreneurText}>
-                  Viewing as an entrepreneur. Investment features are available for investors.
+                  Viewing as an entrepreneur. Investment features are available
+                  for investors.
                 </Text>
               </View>
             </Card.Content>

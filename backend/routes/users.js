@@ -8,25 +8,27 @@ const router = express.Router();
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
     res.json({
       success: true,
-      data: user.getPublicProfile()
+      data: user.getPublicProfile(),
     });
-
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch user',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 });
@@ -39,15 +41,17 @@ router.get('/leaderboard/investors', async (req, res) => {
 
     res.json({
       success: true,
-      data: topInvestors
+      data: topInvestors,
     });
-
   } catch (error) {
     console.error('Get top investors error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch top investors',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 });

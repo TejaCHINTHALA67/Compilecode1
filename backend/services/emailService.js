@@ -8,8 +8,8 @@ class EmailService {
       secure: false,
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+        pass: process.env.SMTP_PASS,
+      },
     });
   }
 
@@ -52,7 +52,7 @@ class EmailService {
               </div>
             </div>
           </div>
-        `
+        `,
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -78,7 +78,9 @@ class EmailService {
             </div>
             
             <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
-              <h2 style="color: #333; margin: 0 0 20px 0;">Welcome ${userData.firstName}!</h2>
+              <h2 style="color: #333; margin: 0 0 20px 0;">Welcome ${
+                userData.firstName
+              }!</h2>
               
               <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
                 Thank you for joining StartupLink! Your account has been successfully created and you're now part of our growing community of entrepreneurs and investors.
@@ -89,26 +91,39 @@ class EmailService {
                 <table style="width: 100%; border-collapse: collapse;">
                   <tr>
                     <td style="padding: 8px 0; color: #666;"><strong>Name:</strong></td>
-                    <td style="padding: 8px 0; color: #333;">${userData.firstName} ${userData.lastName}</td>
+                    <td style="padding: 8px 0; color: #333;">${
+                      userData.firstName
+                    } ${userData.lastName}</td>
                   </tr>
                   <tr>
                     <td style="padding: 8px 0; color: #666;"><strong>Email:</strong></td>
-                    <td style="padding: 8px 0; color: #333;">${userData.email}</td>
+                    <td style="padding: 8px 0; color: #333;">${
+                      userData.email
+                    }</td>
                   </tr>
                   <tr>
                     <td style="padding: 8px 0; color: #666;"><strong>Unique ID:</strong></td>
-                    <td style="padding: 8px 0; color: #333; font-family: monospace; font-weight: bold;">${userData.uniqueId}</td>
+                    <td style="padding: 8px 0; color: #333; font-family: monospace; font-weight: bold;">${
+                      userData.uniqueId
+                    }</td>
                   </tr>
                   <tr>
                     <td style="padding: 8px 0; color: #666;"><strong>Account Type:</strong></td>
-                    <td style="padding: 8px 0; color: #333;">${userData.userType.charAt(0).toUpperCase() + userData.userType.slice(1)}</td>
+                    <td style="padding: 8px 0; color: #333;">${
+                      userData.userType.charAt(0).toUpperCase() +
+                      userData.userType.slice(1)
+                    }</td>
                   </tr>
-                  ${userData.businessName ? `
+                  ${
+                    userData.businessName
+                      ? `
                   <tr>
                     <td style="padding: 8px 0; color: #666;"><strong>Business:</strong></td>
                     <td style="padding: 8px 0; color: #333;">${userData.businessName}</td>
                   </tr>
-                  ` : ''}
+                  `
+                      : ''
+                  }
                 </table>
               </div>
               
@@ -120,7 +135,9 @@ class EmailService {
               </div>
               
               <div style="text-align: center; margin-top: 30px;">
-                <a href="${process.env.FRONTEND_URL || 'https://startuplink.app'}" 
+                <a href="${
+                  process.env.FRONTEND_URL || 'https://startuplink.app'
+                }" 
                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold;">
                   Get Started
                 </a>
@@ -144,11 +161,14 @@ class EmailService {
               </div>
             </div>
           </div>
-        `
+        `,
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('Account confirmation email sent successfully:', result.messageId);
+      console.log(
+        'Account confirmation email sent successfully:',
+        result.messageId,
+      );
       return { success: true, messageId: result.messageId };
     } catch (error) {
       console.error('Error sending account confirmation email:', error);
@@ -194,11 +214,14 @@ class EmailService {
               </div>
             </div>
           </div>
-        `
+        `,
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('Document upload confirmation email sent successfully:', result.messageId);
+      console.log(
+        'Document upload confirmation email sent successfully:',
+        result.messageId,
+      );
       return { success: true, messageId: result.messageId };
     } catch (error) {
       console.error('Error sending document upload confirmation email:', error);

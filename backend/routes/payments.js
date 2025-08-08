@@ -32,16 +32,18 @@ router.post('/razorpay/create-order', auth, requireKYC, async (req, res) => {
         orderId: order.id,
         amount: order.amount,
         currency: order.currency,
-        key: process.env.RAZORPAY_KEY_ID
-      }
+        key: process.env.RAZORPAY_KEY_ID,
+      },
     });
-
   } catch (error) {
     console.error('Razorpay order creation error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create payment order',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 });
@@ -63,16 +65,18 @@ router.post('/stripe/create-intent', auth, requireKYC, async (req, res) => {
       success: true,
       data: {
         clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id
-      }
+        paymentIntentId: paymentIntent.id,
+      },
     });
-
   } catch (error) {
     console.error('Stripe payment intent error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create payment intent',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 });
@@ -99,15 +103,17 @@ router.post('/verify', auth, async (req, res) => {
 
     res.json({
       success: true,
-      data: { isValid }
+      data: { isValid },
     });
-
   } catch (error) {
     console.error('Payment verification error:', error);
     res.status(500).json({
       success: false,
       message: 'Payment verification failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'Internal server error',
     });
   }
 });
