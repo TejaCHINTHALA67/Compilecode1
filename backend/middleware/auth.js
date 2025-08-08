@@ -17,6 +17,7 @@ const auth = async (req, res, next) => {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "fallback_secret"
+    );
 
     // Get user from database
     const user = await User.findById(decoded.userId).select("-password");

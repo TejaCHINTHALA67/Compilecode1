@@ -438,6 +438,7 @@ function generateInvestorInsightsSummary(investor, topStartups, investments) {
     topStartups.length;
   const sectors = [
     ...new Set(topStartups.map((startup) => startup.startup.sector)),
+  ];
 
   return {
     overview: `Analyzed ${

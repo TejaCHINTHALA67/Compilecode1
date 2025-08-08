@@ -106,6 +106,7 @@ router.get("/", optionalAuth, async (req, res) => {
         startupObj.isBookmarked = startup.bookmarkedBy.includes(
           req.user.userId
         );
+      }
 
       return startupObj;
     });
@@ -188,6 +189,7 @@ router.get("/trending", optionalAuth, async (req, res) => {
         startupObj.isBookmarked = startup.bookmarkedBy.includes(
           req.user.userId
         );
+      }
 
       return startupObj;
     });

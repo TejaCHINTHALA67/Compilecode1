@@ -38,6 +38,7 @@ class DocumentService {
         "image/jpeg",
         "image/jpg",
         "image/png",
+      ];
 
       if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -57,7 +58,7 @@ class DocumentService {
       limits: {
         fileSize: 10 * 1024 * 1024, // 10MB limit
         files: 5, // Maximum 5 files per request
-      }
+      },
     });
   }
 

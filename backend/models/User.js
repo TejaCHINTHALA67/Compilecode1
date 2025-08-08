@@ -122,6 +122,7 @@ const userSchema = new mongoose.Schema({
         default: "pending",
       },
     },
+  ],
 
   // OTP System
   otp: {
@@ -130,7 +131,7 @@ const userSchema = new mongoose.Schema({
     attempts: {
       type: Number,
       default: 0,
-    }
+    },
   },
 
   // Investor-specific fields
@@ -274,6 +275,7 @@ const userSchema = new mongoose.Schema({
       userAgent: String,
       location: String,
     },
+  ],
 
   // Preferences
   preferences: {
@@ -289,7 +291,7 @@ const userSchema = new mongoose.Schema({
       sms: {
         type: Boolean,
         default: false,
-      }
+      },
     },
     privacy: {
       profileVisible: {
@@ -299,7 +301,7 @@ const userSchema = new mongoose.Schema({
       investmentHistoryVisible: {
         type: Boolean,
         default: false,
-      }
+      },
     },
     language: {
       type: String,
@@ -309,6 +311,7 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: "USD",
     },
+  },
 
   // Status and Timestamps
   status: {
@@ -323,7 +326,7 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
 // Indexes for better performance

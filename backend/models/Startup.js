@@ -38,6 +38,7 @@ const startupSchema = new mongoose.Schema({
       role: String,
       equityPercentage: Number,
     },
+  ],
 
   // Business Details
   sector: {
@@ -80,7 +81,7 @@ const startupSchema = new mongoose.Schema({
     coordinates: {
       lat: Number,
       lng: Number,
-    }
+    },
   },
 
   // Pitch Content
@@ -114,6 +115,7 @@ const startupSchema = new mongoose.Schema({
         },
       },
     ],
+  },
 
   // Funding Information
   funding: {
@@ -181,6 +183,7 @@ const startupSchema = new mongoose.Schema({
       },
       transactionId: String,
     },
+  ],
 
   // Business Metrics
   metrics: {
@@ -226,7 +229,7 @@ const startupSchema = new mongoose.Schema({
     bookmarks: {
       type: Number,
       default: 0,
-    }
+    },
   },
 
   // Community Interaction
@@ -241,6 +244,7 @@ const startupSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+  ],
 
   // Updates and Progress
   updates: [
@@ -264,6 +268,7 @@ const startupSchema = new mongoose.Schema({
         ],
       },
     },
+  ],
 
   // AI Scoring and Analytics
   aiScore: {
@@ -283,7 +288,7 @@ const startupSchema = new mongoose.Schema({
     lastUpdated: {
       type: Date,
       default: Date.now,
-    }
+    },
   },
 
   // Status and Moderation
