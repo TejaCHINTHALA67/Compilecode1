@@ -78,7 +78,7 @@ const userSchema = new mongoose.Schema({
     coordinates: {
       lat: Number,
       lng: Number,
-    }
+    },
   },
 
   // KYC and Verification
@@ -195,6 +195,7 @@ const userSchema = new mongoose.Schema({
         },
       },
     ],
+  },
 
   // Entrepreneur-specific fields
   entrepreneurProfile: {
@@ -248,7 +249,7 @@ const userSchema = new mongoose.Schema({
     productTesting: {
       type: Number,
       default: 0,
-    }
+    },
   },
 
   // Subscriptions and Premium
