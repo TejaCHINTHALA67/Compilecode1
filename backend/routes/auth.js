@@ -393,7 +393,8 @@ router.post('/login', [
 });
 
 // Document upload endpoint
-router.post('/upload-documents', auth, documentService.getUploadMiddleware().array('documents', 5), async (req, res) => {
+// TEMPORARILY DISABLED FOR TESTING
+// router.post('/upload-documents', auth, documentService.getUploadMiddleware().array('documents', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
