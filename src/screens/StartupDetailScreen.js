@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -24,10 +24,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { commonStyles, theme } from '../styles/theme';
 import AIInsights from '../components/AIInsights';
 
-const { width: screenWidth } = Dimensions.get('window');
+// const { width: screenWidth } = Dimensions.get('window');
 
 export default function StartupDetailScreen({ route, navigation }) {
-  const { startupId, showInvestModal } = route.params || {};
+  const { startupId } = route.params || {};
   const [startup, setStartup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,20 +37,20 @@ export default function StartupDetailScreen({ route, navigation }) {
     if (startupId) {
       loadStartupDetails();
     }
-  }, [startupId]);
+  }, [startupId, loadStartupDetails]);
 
-  const loadStartupDetails = async () => {
+  const loadStartupDetails = useCallback(async () => {
     try {
       setLoading(true);
       const response = await startupsAPI.getById(startupId, token);
       setStartup(response.data || response);
     } catch (err) {
-      console.error('Error loading startup details:', err);
+      // console.error('Error loading startup details:', err);
       setError('Failed to load startup details');
     } finally {
       setLoading(false);
     }
-  };
+  }, [startupId, token]);
 
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
@@ -248,7 +248,7 @@ export default function StartupDetailScreen({ route, navigation }) {
                 style={styles.investButton}
                 onPress={() => {
                   // Navigate to investment flow
-                  console.log('Navigate to investment flow for:', startup._id);
+                  // console.log('Navigate to investment flow for:', startup._id);
                 }}
               >
                 Invest Now
