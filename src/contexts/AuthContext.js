@@ -110,7 +110,7 @@ export function AuthProvider({ children }) {
         dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
       }
     } catch (error) {
-      console.error('Error loading stored auth:', error);
+      // console.error('Error loading stored auth:', error);
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     }
   };
@@ -120,7 +120,7 @@ export function AuthProvider({ children }) {
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(user));
     } catch (error) {
-      console.error('Error storing auth data:', error);
+      // console.error('Error storing auth data:', error);
     }
   };
 
